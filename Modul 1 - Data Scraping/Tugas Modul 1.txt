@@ -1,0 +1,40 @@
+1. Identifikasi Kebutuhan Data
+    Untuk proyek analisis statistik negara memerlukan beberapa fitur dasar yang memberikan gambaran umum tentang setiap negara.
+    Fitur yang Diperlukan:
+    - Nama Negara (Country):
+        Nama negara menjadi pengidentifikasi unik utama untuk setiap data. Tanpa nama negara, data lainnya (seperti populasi atau ibu kota) tidak akan memiliki konteks. Fitur ini sangat penting untuk pelabelan, pengurutan, dan penggabungan dengan set data lain di masa depan. Data ini berhasil diambil dari elemen HTML <h3 class="country-name">.
+    - Ibu Kota (Capital):
+        Nama Ibu kota adalah pusat administrasi dan politik suatu negara. Fitur ini penting untuk analisis geografis dan dapat menjadi indikator awal untuk pusat populasi atau kegiatan ekonomi. Data ini diambil dari elemen <span class="country-capital">.
+    - Populasi (Population):
+        Populasi adalah metrik demografis fundamental. Fitur dapat digunakan untuk analisis apa pun yang berkaitan dengan skala manusia, seperti menghitung kepadatan penduduk, menganalisis PDB per kapita, atau memahami pasar potensial. Data ini diambil dari elemen <span class="country-population">.
+    - Luas Wilayah (Area):
+        Luas wilayah adalah metrik geografis dasar. Fitur ini sangat penting bila digabungkan dengan populasi untuk menghitung kepadatan penduduk (Populasi / Luas), yang merupakan salah satu indikator perbandingan antar negara yang paling umum. Data ini diambil dari elemen <span class="country-area">.
+2. Deskripsi Cara Kerja script
+    Beberapa Library yang digunakan yaitu:
+    - Python: Bahasa pemrograman utama.
+    - Requests: library untuk mengambil data dari web.
+    - BeautifulSoup4 (bs4): library untuk parsing dan navigasi HTML.
+    - Pandas: library untuk membuat dan mengelola struktur data tabular (DataFrame). Ini berfungsi sebagai sistem penyimpanan data dalam memori (in-memory).
+
+    Alur kerja code: 
+    - Pertama script akan mengirim permintaan request menggunakan library requests untuk mengirim permintaan HTTP GET ke URL https://www.scrapethissite.com/pages/simple/. Server web kemudian akan merespons dengan mengirimkan konten HTML dari halaman tersebut.
+    - Kemudian konten HTML yang diterima (dalam bentuk teks) akan di-parsing menggunakan BeautifulSoup. Proses ini mengubah teks HTML mentah menjadi objek Python yang terstruktur (seperti pohon), sehingga memudahkan navigasi dan pencarian elemen tertentu.
+    - Setelah itu, script akan mennenemukan blok data negara dengan mencari semua elemen <div> yang memiliki atribut class="col-md-4 country". Setiap elemen ini mewakili satu "kartu" informasi untuk satu negara di halaman web.
+    - Selanjutnya, script akan mengekstrak detail per negara dengan melakukan iterasi (looping) pada setiap blok negara yang ditemukan. Untuk setiap negara, sebuah fungsi (get_details) digunakan untuk mengekstrak teks dari elemen-elemen spesifik di dalamnya seperti nama negara dari tag <h3>, nama ibu kota, populasi, dan luas wilayah dari tag <span> dengan kelasnya masing-masing (country-capital, country-population, country-area).
+    - Setelah itu, setiap set data yang diambil (nama, ibu kota, populasi, luas) disimpan sebagai satu kesatuan (tuple) dan dikumpulkan dalam sebuah list.
+    - Terakhir, list yang berisi data semua negara tersebut digunakan untuk membuat sebuah Pandas DataFrame. DataFrame adalah struktur data tabular (seperti tabel spreadsheet) yang sangat umum digunakan dalam analisis data di Python, memberikan kolom yang jelas (Country, Capital, Population, Area) untuk setiap fitur.
+3. Dokumentasi Proses Integrasi Data
+    Data yang telah di-scrape diintegrasikan ke dalam sebuah struktur data yang siap untuk dianalisis atau disimpan lebih lanjut. Dalam kasus ini, "database" atau "repository" sementaranya adalah Pandas DataFrame yang kemudian di export ke dalam bentuk csv.
+
+    Langkah-langkah Integrasi:
+    1.  **Pembuatan DataFrame:** List yang berisi dictionary data negara (`countries`) diumpankan ke konstruktor `pd.DataFrame()`. Pandas secara otomatis menggunakan *keys* dari dictionary (misalnya, 'Country', 'Capital') sebagai nama kolom, membuat proses ini efisien dan rapi.
+    2.  **Konversi Tipe Data:** Selama proses ekstraksi, data populasi dan area dikonversi menjadi tipe numerik (`int` dan `float`) untuk memungkinkan kalkulasi matematis di tahap analisis.
+    3.  **Ekspor ke CSV:** DataFrame yang sudah jadi kemudian diekspor ke sebuah file spreadsheet dengan format CSV (`countries_data.csv`) menggunakan metode `df.to_csv()`. Argumen `index=False` digunakan agar nomor indeks DataFrame tidak ikut ditulis ke dalam file.
+
+    Verifikasi Integrasi Data:
+    - Pemeriksaan Jumlah Data: Perintah len(countries) dijalankan untuk memastikan jumlah baris data yang berhasil di-scrape sesuai dengan ekspektasi (dalam kasus ini, 250 negara).
+    - Pemeriksaan Struktur dan Konten: Perintah print(df) dan df.head() (atau countries[:10]) digunakan untuk menampilkan beberapa baris pertama dari DataFrame. Verifikasi ini memastikan bahwa:
+    - Data telah terorganisir dengan benar ke dalam kolom yang sesuai.
+    - Nilai-nilai data (misalnya, 'Andorra', 'Andorra la Vella', '84000') tampak benar dan tidak rusak.
+    - DataFrame memiliki dimensi yang diharapkan (misalnya, [250 rows x 4 columns]).
+    - Proses ini menunjukkan bahwa data telah berhasil diambil dari sumber web dan diintegrasikan dengan benar ke dalam DataFrame Pandas, siap untuk tahap analisis data selanjutnya atau untuk diekspor ke format file lain seperti CSV atau ke database SQL.
